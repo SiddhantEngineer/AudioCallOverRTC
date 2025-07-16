@@ -1,31 +1,34 @@
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
+const socketIO = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = socketIO(server);
 
-app.use(express.static("public"));
+app.use(express.static("public")); // serve index.html and script.js
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-
   socket.on("join", (room) => {
     socket.join(room);
-    socket.to(room).emit("joined", socket.id);
+    const clients = io.sockets.adapter.rooms.get(room);
+    const numClients = clients ? clients.size : 0;
+
+    console.log(`User ${socket.id} joined room ${room}`);
+
+    if (numClients === 1) {
+      socket.emit("created");
+    } else if (numClients === 2) {
+      socket.emit("joined");
+      socket.to(room).emit("ready"); // Notify caller to create offer
+    }
   });
 
   socket.on("signal", ({ room, data }) => {
     socket.to(room).emit("signal", data);
   });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
 });
 
-const PORT = 3000;
-server.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
+server.listen(3000, () =>
+  console.log("Server running on http://localhost:3000")
 );
