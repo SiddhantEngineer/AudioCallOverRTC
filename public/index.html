@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Audio Call</title>
+  </head>
+  <body>
+    <h2>Audio Call via WebRTC</h2>
+    <input type="text" id="roomInput" placeholder="Room ID" />
+    <button id="joinBtn">Join Room</button>
+    <p>Status: <span id="status">Not connected</span></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
