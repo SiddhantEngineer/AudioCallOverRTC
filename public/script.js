@@ -5,6 +5,8 @@ let localStream;
 const roomInput = document.getElementById("roomInput");
 const joinBtn = document.getElementById("joinBtn");
 const statusText = document.getElementById("status");
+const myVideo = document.getElementById("me");
+const peerVideo = document.getElementById("peer");
 
 let candidateQueue = [];
 let remoteDescriptionSet = false;
@@ -16,11 +18,21 @@ joinBtn.onclick = async () => {
   socket.emit("join", room);
   statusText.textContent = "Joining room...";
 
-  localStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false,
-  });
-  localStream.getTracks().forEach((track) => peer.addTrack(track, localStream));
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+    localStream
+      .getTracks()
+      .forEach((track) => peer.addTrack(track, localStream));
+  } catch (err) {
+    alert("Error accessing camera/mic: " + err.message);
+    console.error(err);
+    return;
+  }
+
+  myVideo.srcObject = localStream;
 
   socket.on("joined", async () => {
     const offer = await peer.createOffer();
@@ -68,10 +80,13 @@ joinBtn.onclick = async () => {
   };
 
   peer.ontrack = (event) => {
-    const audio = new Audio();
-    audio.srcObject = event.streams[0];
-    audio.play();
-    document.body.appendChild(audio);
+    // const audio = new Audio();
+    // audio.srcObject = event.streams[0];
+    // audio.play();
+    // document.body.appendChild(audio);
     statusText.textContent = "Call connected!";
+    console.log(event.streams);
+
+    peerVideo.srcObject = event.streams[0];
   };
 };

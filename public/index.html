@@ -2,14 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Audio Call</title>
+    <style>
+      #me {
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 200px;
+        height: 350px;
+        border: 1px solid black;
+        pointer-events: none;
+      }
+      #peer {
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
     <h2>Audio Call via WebRTC</h2>
     <input type="text" id="roomInput" placeholder="Room ID" />
     <button id="joinBtn">Join Room</button>
     <p>Status: <span id="status">Not connected</span></p>
-
+    <video autoplay id="me"></video>
+    <video autoplay id="peer"></video>
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
   </body>
